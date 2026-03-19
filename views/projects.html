@@ -45,7 +45,16 @@
                                 <div class="nk-block">
                                     <div class="card card-stretch">
                                         <div class="card-inner table-responsive">
-                                            <table class="datatable-init nk-tb-list nk-tb-ulist" data-auto-responsive="false" data-paginate="false">
+                                            <div class="row">
+                                                <div class="col-sm-2">
+                                                    <div class="form-group">
+                                                        <div class="form-control-wrap hide-arrows">
+                                                            <input type="text" class="form-control form-control-lg" placeholder="Search" name="search">
+                                                        </div>
+                                                    </div>
+                                                </div>                                                
+                                            </div>
+                                            <table class="datatable-init nk-tb-list nk-tb-ulist" data-auto-responsive="false" data-paginate="false" data-searching="false">
                                                 <thead>
                                                     <tr class="nk-tb-item nk-tb-head">
                                                         <th class="nk-tb-col text-center">#</th>
@@ -156,19 +165,21 @@
                                                     @endif
                                                 </tbody>
                                             </table>
+                                            @if( !empty($projects->results) ) 
                                             <ul class="pagination d-flex flex-wrap list-unstyled">
                                                 <li class="paginate_button page-item {{ $projects->current_page == 1 ? 'disabled' : 'previous' }}">
-                                                    <a href="#" class="page-link" :disabled="{{ $projects->page == 1 }}">Prev</a>
+                                                    <a href="#" class="page-link" :disabled="{{ $projects->page == 1 }}" data-page="{{ $projects->current_page - 1 }}">Prev</a>
                                                 </li>
                                                 @foreach( range(1,$projects->last_page) as $page)
                                                     <li class="paginate_button page-item {{ $page == $projects->current_page ? 'active' : '' }}">
-                                                        <a href="{{ url('Projects@completed') }}?page={{ $page }}" class="page-link">{{ $page }}</a>
+                                                        <a href="#" class="page-link" data-page="{{$page}}">{{ $page }}</a>
                                                     </li>
                                                 @endforeach
                                                 <li class="paginate_button page-item {{ $projects->current_page == $projects->last_page ? 'disabled' : 'next' }}">
-                                                    <a  href="{{ url('Projects@completed') }}?page={{ $projects->current_page + 1 }}" class="page-link">Next</a>
+                                                    <a href="#" class="page-link" data-page="{{ $projects->current_page + 1 }}">Next</a>
                                                 </li>
-                                            </ul>                                         
+                                            </ul>    
+                                            @endif                                     
                                         </div>
                                     </div><!-- .card -->
                                 </div><!-- .nk-block -->
@@ -645,13 +656,68 @@
     <!-- app-root @e -->
     <!-- JavaScript -->
     @include('includes/scripts')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-throttle-debounce/1.1/jquery.ba-throttle-debounce.min.js"></script>
     <script src="{{ asset('assets/libs/summernote/summernote-lite.min.js') }}"></script>
     <script type="text/javascript">
         $(document).ready(function() {
+            let url    = new URL(window.location.href)
+            let query  = url.searchParams;
+                   
+            if( query.has('search') ){
+               $('input[name="search"]').val(query.get('search'))
+            }            
+
             $('.summernote').summernote({
                 placeholder: 'Write something',
                 height: 120,
             });
+            $('input[name="search"]').on(
+                'keyup',
+                $.debounce(
+                    1000,
+                    function(event){
+                        let search = event.target.value;
+
+                        if( query.has('page') ){
+                            query.delete('page')
+                        }
+                        
+                        if( query.has('search') ){
+                            query.set('search',search)
+                        }
+
+                        if( !query.has('search') ){
+                            query.append('search',search)
+                        }
+
+                        if( search.trim().length === 0 ){
+                            query.delete('search')
+                        }
+
+                        window.location.search = query.toString(); 
+                    },
+                )
+            )
+            $('.page-link').on(
+                'click',
+                function() {
+                    event.preventDefault();
+                    
+                    let url    = new URL(window.location.href)
+                    let query  = url.searchParams;
+                    let page   = $(this).data('page')
+
+                    if( query.has('page') && page != query.get('page') ){
+                        query.set('page',page)
+                    }
+
+                    if( !query.has('page') ){
+                        query.append('page',page)
+                    }                    
+                    
+                    window.location.search = query.toString(); 
+                }
+            )
         });
     </script>
 </body>

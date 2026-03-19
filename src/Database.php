@@ -409,7 +409,7 @@ class Database {
         }
 
         $offset = ($page - 1) * $limit;
-
+        
         $rows          = $this->getResults("SELECT {$this->getFields()} FROM {$this->tableName} WHERE {$this->getConditions()}{$this->order} LIMIT {$limit} OFFSET {$offset}");
         $count_results = $this->conn->query("SELECT COUNT(*) FROM {$this->tableName} WHERE {$this->getConditions()}{$this->order}");
 
@@ -418,7 +418,7 @@ class Database {
         return (object) array(
             'current_page'=> $page,
             'size'        => $limit,
-            'last_page'   => floor(($total/$limit)),
+            'last_page'   => $total > $limit ? floor(($total/$limit)) : $page,
             'results'     => $rows,
             'total'       => $total
         );

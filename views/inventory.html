@@ -130,6 +130,7 @@
                                                     @endif
                                                 </tbody>
                                             </table>
+                                            @if( !empty($inventory->results) )
                                             <ul class="pagination d-flex flex-wrap list-unstyled">
                                                 <li class="paginate_button page-item {{ $inventory->current_page == 1 ? 'disabled' : 'previous' }}">
                                                     <a href="#" class="page-link" :disabled="{{ $inventory->page == 1 }}">Prev</a>
@@ -142,7 +143,8 @@
                                                 <li class="paginate_button page-item {{ $inventory->current_page == $inventory->last_page ? 'disabled' : 'next' }}">
                                                     <a  href="{{ url('Inventory@get') }}?page={{ $inventory->current_page + 1 }}" class="page-link">Next</a>
                                                 </li>
-                                            </ul>                                            
+                                            </ul>  
+                                            @endif                                          
                                         </div>
                                     </div><!-- .card -->
                                 </div><!-- .nk-block -->

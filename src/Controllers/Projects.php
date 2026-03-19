@@ -17,11 +17,34 @@ class Projects {
         
         $title = 'Projects In Progress';
         $user  = Auth::user();
+        $page  = 1;
+        $limit = 10;
+        $search= "";
+
+        if( isset($_GET['page']) ){
+            $page  = $_GET['page'];
+        }
+
+        if( isset($_GET['limit']) ){
+            $limit = $_GET['limit'];
+        }
+
+        if( isset($_GET['search']) ){
+            $search = $_GET['search'];
+        }        
+                
         
         $clients = Database::table('clients')->where('company', $user->company)->orderBy("id", false)->get();
 
-        $projects = Database::table('projects')->where('company', $user->company)->where('status', "In Progress")->orderBy("id", false)->get();
-        foreach ($projects as $key => $project) {
+        $projects = Database::table('projects')->where('company', $user->company)->where('status', "In Progress");
+
+        if( !empty($search) ) {
+            $projects =$projects->where('registration_number','LIKE',"%$search%")->orWhere('vin','LIKE',"%$search%");
+        } 
+
+        $projects = $projects->orderBy("id", false)->paginate($page,$limit);
+
+        foreach ($projects->results as $key => $project) {
             $project->client = Database::table('clients')->where('company', $user->company)->where('id', $project->client)->first();
             $project->pending_tasks = Database::table('tasks')->where('project', $project->id)->where('status', "In progress")->count("id", "total")[0]->total;
             $project->total_tasks = Database::table('tasks')->where('project', $project->id)->count("id", "total")[0]->total;
@@ -34,7 +57,7 @@ class Projects {
 
         $staffmembers = Database::table('users')->where('company', $user->company)->where('role', "Staff")->orderBy("id", false)->get();
         $insurance = Database::table('insurance')->where('company', $user->company)->orderBy("id", false)->get();
-        
+
         return view("projects", compact("user", "title", "projects","clients","staffmembers","insurance"));
         
     }
@@ -50,6 +73,7 @@ class Projects {
         $user  = Auth::user();
         $page  = 1;
         $limit = 10;
+        $search= "";
 
         if( isset($_GET['page']) ){
             $page  = $_GET['page'];
@@ -58,13 +82,21 @@ class Projects {
         if( isset($_GET['limit']) ){
             $limit = $_GET['limit'];
         }
+
+        if( isset($_GET['search']) ){
+            $search = $_GET['search'];
+        }          
         
         $clients = Database::table('clients')->where('company', $user->company)->orderBy("id", false)->get();
 
-        $projects = Database::table('projects')->where('company', $user->company)->where('status',"!=", "In Progress")->orderBy("id", false)->paginate($page,$limit);
+        $projects = Database::table('projects')->where('company', $user->company)->where('status',"!=", "In Progress");
 
-        // print_r($projects);
+        if( !empty($search) ) {
+            $projects = $projects->where('registration_number','LIKE',"%$search%")->orWhere('vin','LIKE',"%$search%");
+        } 
 
+        $projects = $projects->orderBy("id", false)->paginate($page,$limit);
+        
         foreach ($projects->results as $key => $project) {
             $project->client = Database::table('clients')->where('company', $user->company)->where('id', $project->client)->first();
             $project->pending_tasks = Database::table('tasks')->where('project', $project->id)->where('status', "In progress")->count("id", "total")[0]->total;

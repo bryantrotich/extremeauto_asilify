@@ -399,27 +399,27 @@
                 var auto_responsive = $(this).data('auto-responsive');
                 var paginate        = $(this).data('paginate') ?? true; 
                 var def = {
-                        responsive: true,
-                        autoWidth: false,
-                        dom:'<"row justify-between g-2"<"col-7 col-sm-6 text-left"f><"col-5 col-sm-6 text-right"<"datatable-filter"l>>><"datatable-wrap my-3"t><"row align-items-center"<"col-7 col-sm-12 col-md-9"p><"col-5 col-sm-12 col-md-3 text-left text-md-right"i>>',
-                        language: {
-                            search : "",
-                            searchPlaceholder: "Type in to Search",
-                            lengthMenu: "<span class='d-none d-sm-inline-block'>Show</span><div class='form-control-select'> _MENU_ </div>",
-                            info: "_START_ -_END_ of _TOTAL_",
-                            infoEmpty: "No records found",
-                            infoFiltered: "( Total _MAX_  )",
-                            paginate: paginate ? {
-                                "first":      "First",
-                                "last":       "Last",
-                                "next":       "Next",
-                                "previous":   "Prev"
-                            } : {},
-                        }
-                    }, 
-                    attr = (opt) ? extend(def, opt) : def;
-                    attr =(auto_responsive === false) ?  extend(attr, {responsive: false}) : attr;
-
+                    responsive: true,
+                    autoWidth: false,
+                    dom:'<"row justify-between g-2"<"col-7 col-sm-6 text-left"f><"col-5 col-sm-6 text-right"<"datatable-filter"l>>><"datatable-wrap my-3"t><"row align-items-center"<"col-7 col-sm-12 col-md-9"p><"col-5 col-sm-12 col-md-3 text-left text-md-right"i>>',
+                    language: {
+                        search : "",
+                        searchPlaceholder: "Type in to Search",
+                        lengthMenu: "<span class='d-none d-sm-inline-block'>Show</span><div class='form-control-select'> _MENU_ </div>",
+                        info: "_START_ -_END_ of _TOTAL_",
+                        infoEmpty: "No records found",
+                        infoFiltered: "( Total _MAX_  )",
+                        paginate: paginate ? {
+                            "first":      "First",
+                            "last":       "Last",
+                            "next":       "Next",
+                            "previous":   "Prev"
+                        } : {},
+                    },
+                    searching: $(this).data('searching') ?? true
+                }, 
+                attr = (opt) ? extend(def, opt) : def;
+                attr =(auto_responsive === false) ?  extend(attr, {responsive: false}) : attr;
                 $(this).DataTable(attr);
             });
         }
