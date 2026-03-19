@@ -76,6 +76,7 @@ Router::group(array(
         Router::post('/inventory/confirmreceipt', 'Inventory@confirmreceipt');
         Router::post('/inventory/create', 'Inventory@create');
         Router::post('/inventory/addstock', 'Inventory@addstock');
+        Router::post('/inventory/models', 'Inventory@models');
         Router::post('/inventory/update', 'Inventory@update');
         Router::get('/inventory/{inventoryid}/details', 'Inventory@details', array(
             'as' => 'inventoryid'

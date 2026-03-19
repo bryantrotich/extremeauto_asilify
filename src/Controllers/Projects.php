@@ -50,8 +50,6 @@ class Projects {
         $user  = Auth::user();
         $page  = 1;
         $limit = 10;
-        print_r($limit);
-
 
         if( isset($_GET['page']) ){
             $page  = $_GET['page'];
@@ -60,8 +58,6 @@ class Projects {
         if( isset($_GET['limit']) ){
             $limit = $_GET['limit'];
         }
-
-        print_r($limit);
         
         $clients = Database::table('clients')->where('company', $user->company)->orderBy("id", false)->get();
 

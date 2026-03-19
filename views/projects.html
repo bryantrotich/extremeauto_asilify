@@ -156,8 +156,8 @@
                                                     @endif
                                                 </tbody>
                                             </table>
-                                            <ul class="pagination">
-                                                <li class="paginate_button page-item {{ $projects->page == 1 ? 'disabled' : 'previous' }}">
+                                            <ul class="pagination d-flex flex-wrap list-unstyled">
+                                                <li class="paginate_button page-item {{ $projects->current_page == 1 ? 'disabled' : 'previous' }}">
                                                     <a href="#" class="page-link" :disabled="{{ $projects->page == 1 }}">Prev</a>
                                                 </li>
                                                 @foreach( range(1,$projects->last_page) as $page)
@@ -165,10 +165,10 @@
                                                         <a href="{{ url('Projects@completed') }}?page={{ $page }}" class="page-link">{{ $page }}</a>
                                                     </li>
                                                 @endforeach
-                                                <li class="paginate_button page-item {{ $page != $projects->last_page ? 'next' : 'disabled' }}">
-                                                    <a href="#" class="page-link">Next</a>
+                                                <li class="paginate_button page-item {{ $projects->current_page == $projects->last_page ? 'disabled' : 'next' }}">
+                                                    <a  href="{{ url('Projects@completed') }}?page={{ $projects->current_page + 1 }}" class="page-link">Next</a>
                                                 </li>
-                                            </ul>                                            
+                                            </ul>                                         
                                         </div>
                                     </div><!-- .card -->
                                 </div><!-- .nk-block -->

@@ -1,4 +1,4 @@
-                <form class="simcy-form" action="{{ url('Inventory@update') }}" data-parsley-validate="" method="POST" loader="true">
+                <form class="simcy-form" action="{{ url('Inventory@update') }}" models-url="{{ url('Inventory@models') }}" data-parsley-validate="" method="POST" loader="true">
                     <div class="modal-body">
                         <p>Update Item</p>
                         <div class="row gy-4">
@@ -103,7 +103,50 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="form-label">Make</label>
+                                    <div class="form-control-wrap">
+                                        <div class="form-control-select">
+                                            <select class="form-control select2-dynamic project-make-select" name="make" required="">
+                                                <option value="">Select Make</option>
+                                                @if(!empty($makes))
+                                                    @foreach($makes as $make)
+                                                    <option @if($inventory->make == $make->id) selected @endif value="{{ $make->id }}">{{ $make->name }}</option>
+                                                    @endforeach
+                                                @endif
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="form-label">Model</label>
+                                    <div class="form-control-wrap">
+                                        <div class="form-control-select">
+                                            <select class="form-control select2-dynamic project-model-select" name="model" required="">
+                                                <option value="">Select Model</option>
+                                                @if(!empty($models))
+                                                    @foreach($models as $model)
+                                                    <option value="{{ $model->id }}" @if($inventory->model == $model->id) selected @endif>{{ $model->name }}</option>
+                                                    @endforeach
+                                                @endif
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>  
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label class="form-label">Part Number</label>
+                                    <div class="form-control-wrap">
+                                        <input type="text" class="form-control form-control-lg" placeholder="Part Number" name="part_number"  value="{{ $inventory->part_number }}">
+                                    </div>
+                                </div>
+                            </div>                            
+                        </div>                                                                                 
+                        </div>                        
                     </div>
                     <div class="modal-footer bg-light">
                         <button class="btn btn-white btn-dim btn-outline-light" type="button" data-dismiss="modal"><em class="icon ni ni-cross-circle"></em><span>Cancel</span></button>

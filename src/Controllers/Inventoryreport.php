@@ -22,7 +22,7 @@ class Inventoryreport {
     public function view($inventoryid) {
 
         $user   = Auth::user();
-        $inventory = Database::table('inventory_new')->where('company', $user->company)->where('id', $inventoryid)->first();
+        $inventory = Database::table('inventory')->where('company', $user->company)->where('id', $inventoryid)->first();
         if (empty($inventory)) {
             return view('errors/404');
         }
@@ -41,7 +41,7 @@ class Inventoryreport {
     public function render($inventoryid) {
         
         $user   = Auth::user();
-        $inventory = Database::table('inventory_new')->where('company', $user->company)->where('id', $inventoryid)->first();
+        $inventory = Database::table('inventory')->where('company', $user->company)->where('id', $inventoryid)->first();
         if (empty($inventory)) {
             return view('errors/404');
         }

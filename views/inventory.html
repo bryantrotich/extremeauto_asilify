@@ -44,7 +44,7 @@
                                 <div class="nk-block">
                                     <div class="card card-stretch">
                                         <div class="card-inner">
-                                            <table class="datatable-init nk-tb-list nk-tb-ulist" data-auto-responsive="false">
+                                            <table class="datatable-init nk-tb-list nk-tb-ulist" data-auto-responsive="false" data-paginate="false">
                                                 <thead>
                                                     <tr class="nk-tb-item nk-tb-head">
                                                         <th class="nk-tb-col text-center">#</th>
@@ -52,14 +52,16 @@
                                                         <th class="nk-tb-col tb-col-md"><span class="sub-text">Quantity / Item Code</span></th>
                                                         <th class="nk-tb-col tb-col-md"><span class="sub-text">Unit Cost</span></th>
                                                         <th class="nk-tb-col tb-col-md"><span class="sub-text">Supplier</span></th>
+                                                        <th class="nk-tb-col tb-col-md"><span class="sub-text">Make / Model</span></th>
+                                                        <th class="nk-tb-col tb-col-md"><span class="sub-text">Part Number</span></th>
                                                         <th class="nk-tb-col tb-col-md"><span class="sub-text">Status</span></th>
                                                         <th class="nk-tb-col nk-tb-col-tools text-right">
                                                         </th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    @if(!empty($inventory))
-                                                    @foreach($inventory as $index => $item)
+                                                    @if(!empty($inventory->results))
+                                                    @foreach($inventory->results as $index => $item)
                                                     <tr class="nk-tb-item">
                                                         <td class="nk-tb-col text-center">{{ $index + 1 }}</td>
                                                         <td class="nk-tb-col">
@@ -80,6 +82,12 @@
                                                             <span>--|--</span>
                                                             @endif
                                                         </td>
+                                                        <td class="nk-tb-col">
+                                                            @if( !is_null($item->make) )
+                                                                {{ $item->make->name }} <br> {{ $item->model->name }}
+                                                            @endif
+                                                        </td>
+                                                        <td class="nk-tb-col">{{ $item->part_number }}</td>
                                                         <td class="nk-tb-col">
                                                             @if($item->quantity > $item->restock_quantity)
                                                             <span class="badge badge-sm badge-dot has-bg badge-success d-mb-inline-flex">In Stock</span>
@@ -122,6 +130,19 @@
                                                     @endif
                                                 </tbody>
                                             </table>
+                                            <ul class="pagination d-flex flex-wrap list-unstyled">
+                                                <li class="paginate_button page-item {{ $inventory->current_page == 1 ? 'disabled' : 'previous' }}">
+                                                    <a href="#" class="page-link" :disabled="{{ $inventory->page == 1 }}">Prev</a>
+                                                </li>
+                                                @foreach( range(1,$inventory->last_page) as $page)
+                                                    <li class="paginate_button page-item {{ $page == $inventory->current_page ? 'active' : '' }}">
+                                                        <a href="{{ url('Inventory@get') }}?page={{ $page }}" class="page-link">{{ $page }}</a>
+                                                    </li>
+                                                @endforeach
+                                                <li class="paginate_button page-item {{ $inventory->current_page == $inventory->last_page ? 'disabled' : 'next' }}">
+                                                    <a  href="{{ url('Inventory@get') }}?page={{ $inventory->current_page + 1 }}" class="page-link">Next</a>
+                                                </li>
+                                            </ul>                                            
                                         </div>
                                     </div><!-- .card -->
                                 </div><!-- .nk-block -->
@@ -149,7 +170,7 @@
                 <div class="modal-header">
                     <h5 class="modal-title">Create Item</h5>
                 </div>
-                <form class="simcy-form" action="{{ url('Inventory@create') }}" data-parsley-validate="" method="POST" loader="true">
+                <form class="simcy-form" action="{{ url('Inventory@create') }}" models-url="{{ url('Inventory@models') }}" data-parsley-validate="" method="POST" loader="true">
                     <div class="modal-body">
                         <p>Add an item</p>
                         <div class="row gy-4">
@@ -252,6 +273,48 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="form-label">Make</label>
+                                    <div class="form-control-wrap">
+                                        <div class="form-control-select">
+                                            <select class="form-control select2-dynamic project-make-select" name="make" required="">
+                                                <option value="">Select Make</option>
+                                                @if(!empty($makes))
+                                                @foreach($makes as $make)
+                                                <option value="{{ $make->id }}">{{ $make->name }}</option>
+                                                @endforeach
+                                                @endif
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="form-label">Model</label>
+                                    <div class="form-control-wrap">
+                                        <div class="form-control-select">
+                                            <select class="form-control select2-dynamic project-model-select" name="model" required="">
+                                                <option value="">Select Model</option>
+                                                @if(!empty($models))
+                                                @foreach($models as $model)
+                                                <option value="{{ $model->id }}" @if($project->model == $model->id) selected @endif>{{ $model->name }}</option>
+                                                @endforeach
+                                                @endif
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>  
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label class="form-label">Part Number</label>
+                                    <div class="form-control-wrap">
+                                        <input type="text" class="form-control form-control-lg" placeholder="Part Number" name="part_number">
+                                    </div>
+                                </div>
+                            </div>                                                                                 
                         </div>
                     </div>
                     <div class="modal-footer bg-light">
@@ -316,6 +379,11 @@
     <!-- app-root @e -->
     <!-- JavaScript -->
     @include('includes/scripts')
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $(".select2-dynamic").select2();
+        })
+    </script>
 </body>
 
 </html>
